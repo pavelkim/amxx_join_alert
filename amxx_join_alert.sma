@@ -33,7 +33,7 @@ public hook_TeamInfo() {
 
 	if (player_data[PlayerID][PLAYER_TEAM] == "U" ) {
 
-		player_data[PlayerID][PLAYER_TEAM] = TeamName
+		copy(player_data[PlayerID][PLAYER_TEAM], charsmax(TeamName), TeamName)
 		
 		new message[64]
 		format(message, 64, "[FIRST JOIN] PlayerID: %i SteamID: %s TeamName: %s", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
@@ -70,11 +70,11 @@ public client_putinserver(id) {
 
 	arrayset(player_data[id], 0, player_data_struct)
 	get_user_authid(id, player_data[id][PLAYER_STEAMID], charsmax(player_data[][PLAYER_STEAMID]))
-	get_user_name(id, player_data[id][PLAYER_NAME], charsmax(MAX_NAME_LENGTH))
-	player_data[id][PLAYER_TEAM] = "U"
+	get_user_name(id, player_data[id][PLAYER_NAME], MAX_NAME_LENGTH)
+	copy(player_data[id][PLAYER_TEAM], 1, "U")
 
 	if (player_data[id][PLAYER_STEAMID] == "BOT") {
-		return
+		return true
 	}
 
 	new message[80]
@@ -84,7 +84,7 @@ public client_putinserver(id) {
 	return true
 }
 
-public say(message) {
+public say(message[]) {
 	new final_message[128]
 	format(final_message, charsmax(final_message), "= [JOIN ALERT] = %s", message)
 	log_message(final_message)
