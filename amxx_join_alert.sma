@@ -31,7 +31,7 @@ public hook_TeamInfo() {
 	format(message, 64, "[EVENT] TeamInfo: PlayerID: %i TeamName: %s", PlayerID, TeamName[0])
 	say(message)
 
-	if (player_data[PlayerID][PLAYER_TEAM] == "U" ) {
+	if (strcmp(player_data[PlayerID][PLAYER_TEAM], "U")) {
 
 		copy(player_data[PlayerID][PLAYER_TEAM], charsmax(TeamName), TeamName)
 		
@@ -69,11 +69,12 @@ public client_connect(id) {
 public client_putinserver(id) {
 
 	arrayset(player_data[id], 0, player_data_struct)
+	
 	get_user_authid(id, player_data[id][PLAYER_STEAMID], charsmax(player_data[][PLAYER_STEAMID]))
 	get_user_name(id, player_data[id][PLAYER_NAME], MAX_NAME_LENGTH)
 	copy(player_data[id][PLAYER_TEAM], 1, "U")
 
-	if (player_data[id][PLAYER_STEAMID] == "BOT") {
+	if (strcmp(player_data[id][PLAYER_STEAMID], "BOT")) {
 		return true
 	}
 
