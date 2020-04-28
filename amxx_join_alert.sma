@@ -17,18 +17,18 @@ new player_data[MAX_PLAYERS + 1][player_data_struct]
 
 public plugin_init() {
 	register_plugin(PLUGIN, VERSION, AUTHOR)
-	register_event("TeamSelect", "hook_TeamSelect", "a")
+	register_event("TeamInfo", "hook_TeamInfo", "a")
 }
 
-public hook_TeamSelect() {
+public hook_TeamInfo() {
 	new PlayerID = read_data(1)
-	new TeamName[32]
+	new TeamName[2]
 
-	read_data(2, TeamName, 32)
+	read_data(2, TeamName, charsmax(TeamName))
 	
 	new message[64]
-	format(message, 64, "TeamName Event: PlayerID: %i TeamName: %s", PlayerID, TeamName)
-	log_message(message)
+	format(message, 64, "TeamName Event: PlayerID: %i TeamName: %s", PlayerID, TeamName[0])
+	say(message)
 	
 	return PLUGIN_CONTINUE
 }
@@ -43,7 +43,7 @@ public OnAutoConfigsBuffered() {
 public client_disconnected(id, drop, message, maxlen) {
 	new message[64]
 	format(message, 64, "Client Disconnected Event: PlayerID: %i ", id)
-	log_message(message)
+	say(message)
 
 	return true
 }
@@ -51,7 +51,7 @@ public client_disconnected(id, drop, message, maxlen) {
 public client_connect(id) {
 	new message[64]
 	format(message, 64, "Client Connected Event: PlayerID: %i ", id)
-	log_message(message)
+	say(message)
 
 	return true
 }
@@ -63,7 +63,15 @@ public client_putinserver(id) {
 
 	new message[80]
 	format(message, 80, "Client Entering Game Event: PlayerID: %i SteamID: %s", id, player_data[id][PLAYER_STEAMID])
-	log_message(message)
+	say(message)
 
 	return true
+}
+
+public say(message) {
+
+	new final_message_size = charsmax(message) + 20
+	new final_message[final_message_size]
+	format(final_message, final_message_size, "= [JOIN ALERT] = %s", message)
+	log_message(final_message)
 }
