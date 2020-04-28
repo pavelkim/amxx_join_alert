@@ -17,10 +17,10 @@ new player_data[MAX_PLAYERS + 1][player_data_struct]
 
 public plugin_init() {
 	register_plugin(PLUGIN, VERSION, AUTHOR)
-	register_event("TeamInfo", "hook_TeamInfo", "a")
+	register_event("TeamSelect", "hook_TeamSelect", "a")
 }
 
-public hook_TeamInfo() {
+public hook_TeamSelect() {
 	new PlayerID = read_data(1)
 	new TeamName[32]
 
