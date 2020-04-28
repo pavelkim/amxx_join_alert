@@ -19,14 +19,20 @@ enum _:player_data_struct {
 }
 
 new player_data[MAX_PLAYERS + 1][player_data_struct]
-
-new REPORT_SOCKET_ERROR
-new REPORT_SOCKET = socket_open(PLUGIN_HOST, PLUGIN_PORT, SOCKET_UDP, REPORT_SOCKET_ERROR)
+new REPORT_SOCKET
 
 public plugin_init() {
-	register_plugin(PLUGIN, VERSION, AUTHOR)
 
-	switch (REPORT_SOCKET_ERROR) {
+	register_plugin(PLUGIN, VERSION, AUTHOR)
+	register_event("TeamInfo", "hook_TeamInfo", "a")
+
+}
+
+public plugin_cfg() {
+	new report_socket_error
+	REPORT_SOCKET = socket_open(PLUGIN_HOST, PLUGIN_PORT, 2, report_socket_error)
+
+	switch (report_socket_error) {
 		case 1: {
 			log_amx("[JOIN ALERT] Unable to create socket.")
 			return
@@ -41,9 +47,8 @@ public plugin_init() {
 		}
 	}
 
-	register_event("TeamInfo", "hook_TeamInfo", "a")
-
 	socket_send(REPORT_SOCKET, "Hello", 5)
+	socket_close(REPORT_SOCKET)
 }
 
 public hook_TeamInfo() {
