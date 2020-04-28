@@ -62,7 +62,7 @@ public hook_TeamInfo() {
 	read_data(2, TeamName, charsmax(TeamName))
 	
 	new message[64]
-	format(message, 64, "[EVENT] TeamInfo: PlayerID: %i TeamName: %s", PlayerID, TeamName[0])
+	format(message, charsmax(message), "[EVENT] TeamInfo: PlayerID: %i TeamName: %s", PlayerID, TeamName[0])
 	say(message)
 
 	if (!strcmp(player_data[PlayerID][PLAYER_TEAM], "U") && strcmp(TeamName, "U")) {
@@ -70,15 +70,21 @@ public hook_TeamInfo() {
 		copy(player_data[PlayerID][PLAYER_TEAM], charsmax(TeamName), TeamName)
 		
 		new message[64]
-		format(message, 64, "[ENTER] PlayerID: %i SteamID: %s TeamName: %s", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
+		format(message, charsmax(message), "[ENTER] PlayerID: %i SteamID: %s TeamName: %s", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
 		say(message)
+
+
+		format(message, charsmax(message), "ENTER\t%i\t%s\t%s", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
+		socket_send(REPORT_SOCKET, message, charsmax(message))
 	
 	} else if (strcmp(player_data[PlayerID][PLAYER_TEAM], "U") && !strcmp(TeamName, "U")) {
 
 		new message[64]
-		format(message, 64, "[LEAVE] PlayerID: %i SteamID: %s LastTeamName: %s", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
+		format(message, charsmax(message), "[LEAVE] PlayerID: %i SteamID: %s LastTeamName: %s", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
 		say(message)
 
+		format(message, charsmax(message), "LEAVE\t%i\t%s\t%s", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
+		socket_send(REPORT_SOCKET, message, charsmax(message))
 	}
 	
 	return PLUGIN_CONTINUE
@@ -93,7 +99,7 @@ public OnAutoConfigsBuffered() {
 
 public client_disconnected(id, drop, message, maxlen) {
 	new message[64]
-	format(message, 64, "Client Disconnected Event: PlayerID: %i ", id)
+	format(message, charsmax(message), "Client Disconnected Event: PlayerID: %i ", id)
 	say(message)
 
 	return true
@@ -101,7 +107,7 @@ public client_disconnected(id, drop, message, maxlen) {
 
 public client_connect(id) {
 	new message[64]
-	format(message, 64, "Client Connected Event: PlayerID: %i ", id)
+	format(message, charsmax(message), "Client Connected Event: PlayerID: %i ", id)
 	say(message)
 
 	return true
@@ -120,8 +126,11 @@ public client_putinserver(id) {
 	}
 
 	new message[80]
-	format(message, 80, "[CONNECT] PlayerID: %i SteamID: %s Name: %s", id, player_data[id][PLAYER_STEAMID], player_data[id][PLAYER_NAME])
+	format(message, charsmax(message), "[CONNECT] PlayerID: %i SteamID: %s Name: %s", id, player_data[id][PLAYER_STEAMID], player_data[id][PLAYER_NAME])
 	say(message)
+
+	format(message, charsmax(message), "CONNECT\t%i\t%s\t%s", id, player_data[id][PLAYER_STEAMID], player_data[id][PLAYER_NAME])
+	socket_send(REPORT_SOCKET, message, charsmax(message))
 
 	return true
 }
