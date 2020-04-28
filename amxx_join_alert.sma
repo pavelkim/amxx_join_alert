@@ -4,6 +4,9 @@ new PLUGIN[] = "AMXX Join Alert"
 new AUTHOR[] = "uh9had"
 new VERSION[] = "1.0.0"
 
+#define MAX_PLAYERS 32
+#define MAX_NAME_LENGTH 32
+
 enum _:player_data_struct {
 	PLAYER_ID,
 	PLAYER_NAME[MAX_NAME_LENGTH * 3],
@@ -18,7 +21,7 @@ public plugin_init() {
 }
 
 public OnAutoConfigsBuffered() {
-	new players[]
+	new players[MAX_PLAYERS]
 	new players_number
 
 	get_players(players[MAX_PLAYERS], players_number, "h")
