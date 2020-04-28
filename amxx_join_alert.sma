@@ -1,11 +1,15 @@
 #include <amxmodx>
+#include <sockets>
 
-new PLUGIN[] = "Join Alert"
-new AUTHOR[] = "Pavel Kim"
-new VERSION[] = "1.0.0"
+#define PLUGIN "Join Alert"
+#define AUTHOR "Pavel Kim"
+#define VERSION "1.1.0"
 
 #define MAX_PLAYERS 32
 #define MAX_NAME_LENGTH 32
+
+#define PLUGIN_HOST "127.0.0.1"
+#define PLUGIN_PORT 28000
 
 enum _:player_data_struct {
 	PLAYER_ID,
@@ -16,18 +20,33 @@ enum _:player_data_struct {
 
 new player_data[MAX_PLAYERS + 1][player_data_struct]
 
+new REPORT_SOCKET_ERROR
+new REPORT_SOCKET = socket_open(PLUGIN_HOST, PLUGIN_PORT, SOCKET_UDP, REPORT_SOCKET_ERROR)
+
 public plugin_init() {
 	register_plugin(PLUGIN, VERSION, AUTHOR)
+
+	switch (REPORT_SOCKET_ERROR) {
+		case 1: {
+			log_amx("[JOIN ALERT] Unable to create socket.")
+			return
+		}
+		case 2: {
+			log_amx("[JOIN ALERT] Unable to connect.")
+			return
+		}
+		case 3: {
+			log_amx("[JOIN ALERT] Unable to connect to the port.")
+			return
+		}
+	}
+
 	register_event("TeamInfo", "hook_TeamInfo", "a")
+
+	socket_send(REPORT_SOCKET, "Hello", 5)
 }
 
 public hook_TeamInfo() {
-	/*
-	
-	U -> T/C
-	T/C -> U
-
-	*/
 	new PlayerID = read_data(1)
 	new TeamName[2]
 
