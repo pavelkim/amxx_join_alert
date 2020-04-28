@@ -48,6 +48,10 @@ public plugin_cfg() {
 	}
 
 	socket_send(REPORT_SOCKET, "Hello", 5)
+}
+
+public plugin_end() {
+	socket_send(REPORT_SOCKET, "Bye", 3)
 	socket_close(REPORT_SOCKET)
 }
 
