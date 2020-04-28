@@ -22,8 +22,14 @@ public plugin_init() {
 }
 
 public hook_TeamInfo() {
+	/*
+	
+	U -> T/C
+	T/C -> U
+
+	*/
 	new PlayerID = read_data(1)
-	new TeamName[2]
+	new TeamName[1]
 
 	read_data(2, TeamName, charsmax(TeamName))
 	
