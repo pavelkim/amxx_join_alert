@@ -69,9 +69,7 @@ public client_putinserver(id) {
 }
 
 public say(message) {
-
-	new final_message_size = charsmax(message) + 20
-	new final_message[final_message_size]
-	format(final_message, final_message_size, "= [JOIN ALERT] = %s", message)
+	new final_message[]
+	format(final_message, charsmax(final_message), "= [JOIN ALERT] = %s", message)
 	log_message(final_message)
 }
