@@ -1,6 +1,6 @@
 #include <amxmodx>
 
-new PLUGIN[] = "AMXX Join Alert"
+new PLUGIN[] = "Join Alert"
 new AUTHOR[] = "Pavel Kim"
 new VERSION[] = "1.0.0"
 
@@ -42,8 +42,15 @@ public hook_TeamInfo() {
 		copy(player_data[PlayerID][PLAYER_TEAM], charsmax(TeamName), TeamName)
 		
 		new message[64]
-		format(message, 64, "[FIRST JOIN] PlayerID: %i SteamID: %s TeamName: %s", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
+		format(message, 64, "[ENTER] PlayerID: %i SteamID: %s TeamName: %s", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
 		say(message)
+	
+	} else if (strcmp(player_data[PlayerID][PLAYER_TEAM], "U") && !strcmp(TeamName, "U")) {
+
+		new message[64]
+		format(message, 64, "[LEAVE] PlayerID: %i SteamID: %s LastTeamName: %s", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
+		say(message)
+
 	}
 	
 	return PLUGIN_CONTINUE
@@ -93,6 +100,6 @@ public client_putinserver(id) {
 
 public say(message[]) {
 	new final_message[128]
-	format(final_message, charsmax(final_message), "= [JOIN ALERT] = %s", message)
+	format(final_message, charsmax(final_message), "[JOIN ALERT] %s", message)
 	log_message(final_message)
 }
