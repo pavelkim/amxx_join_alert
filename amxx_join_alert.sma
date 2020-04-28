@@ -20,7 +20,12 @@ public plugin_init() {
 	register_event("TeamInfo", "hook_TeamInfo", "a")
 }
 
-public hook_TeamInfo(PlayerID, TeamName) {
+public hook_TeamInfo() {
+	new PlayerID = read_data(1)
+	new TeamName[32]
+
+	read_data(2, TeamName, 32)
+	
 	new message[64]
 	format(message, 64, "TeamName Event: PlayerID: %i TeamName: %s", PlayerID, TeamName)
 	log_message(message)
