@@ -32,7 +32,7 @@ public OnAutoConfigsBuffered() {
 	new players[MAX_PLAYERS]
 	new players_number
 
-	get_players(players[MAX_PLAYERS], players_number, "h")
+	get_players(players, players_number, "h")
 }
 
 public client_disconnected(id, drop, message, maxlen) {
