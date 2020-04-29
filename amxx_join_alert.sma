@@ -188,7 +188,7 @@ public say_to_socket(message[], message_length) {
 		say("[SOCKET] Socket is ready")
 		say("[SOCKET] Waiting for socket to change..")
 
-		if (socket_change(g_sckweb, 1000)) {
+		if (socket_change(REPORT_SOCKET, 1000)) {
 			say("[SOCKET] Socket changed")
 		} else {
 			say("[SOCKET] Socket hasn't changed")
