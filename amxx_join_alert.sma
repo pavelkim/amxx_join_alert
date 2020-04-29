@@ -11,6 +11,10 @@
 #define PLUGIN_HOST "127.0.0.1"
 #define PLUGIN_PORT 28000
 
+#define TASKID_GETANSWER 0
+#define TASKID_CLOSESOCKET 1
+
+
 enum _:player_data_struct {
 	PLAYER_ID,
 	PLAYER_NAME[MAX_NAME_LENGTH * 3],
@@ -25,6 +29,9 @@ public plugin_init() {
 
 	register_plugin(PLUGIN, VERSION, AUTHOR)
 	register_event("TeamInfo", "hook_TeamInfo", "a")
+
+    set_task(1.0, "task_check_on_socket", TASKID_GETANSWER, "", 0, "b") 
+    set_task(20.0, "task_close_socket", TASKID_CLOSESOCKET, "", 0, "a", 1) 
 
 }
 
@@ -87,6 +94,21 @@ public hook_TeamInfo() {
 		socket_send(REPORT_SOCKET, message, charsmax(message))
 	}
 	
+	return PLUGIN_CONTINUE
+}
+
+public task_check_on_socket() {
+	new message[64]
+	format(message, charsmax(message), "[SOCKET] State: %i", REPORT_SOCKET)
+	say(message)
+
+	return PLUGIN_CONTINUE
+}
+
+public task_check_on_socket() {
+	socket_close(REPORT_SOCKET)
+	say("[SOCKET] Task just have closed the socket.")
+
 	return PLUGIN_CONTINUE
 }
 
