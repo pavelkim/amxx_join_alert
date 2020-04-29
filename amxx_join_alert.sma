@@ -14,6 +14,7 @@
 #define TASKID_GETANSWER 0
 #define TASKID_CLOSESOCKET 1
 
+#define SOCK_NON_BLOCKING 1
 
 enum _:player_data_struct {
 	PLAYER_ID,
@@ -99,10 +100,19 @@ public hook_TeamInfo() {
 
 public task_check_on_socket() {
 	new message[24]
-	format(message, charsmax(message), "[SOCKET] State: %i", REPORT_SOCKET)
+	new socket_state
+	new socket_send_result = 
+
+	if (REPORT_SOCKET > 0) {
+		socket_state = 1
+	} else {
+		socket_state = -1
+	}
+
+	format(message, charsmax(message), "[SOCKET] State: %i", socket_state)
 	say(message)
 
-	format(message, charsmax(message), "DEBUG^tS%i^n", REPORT_SOCKET)
+	format(message, charsmax(message), "DEBUG^tS%i^n", socket_state)
 	socket_send(REPORT_SOCKET, message, charsmax(message))
 
 	return PLUGIN_CONTINUE
