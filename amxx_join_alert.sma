@@ -47,11 +47,11 @@ public plugin_cfg() {
 		}
 	}
 
-	socket_send(REPORT_SOCKET, "Hello\n", 5)
+	socket_send(REPORT_SOCKET, "Hello^n", 7)
 }
 
 public plugin_end() {
-	socket_send(REPORT_SOCKET, "Bye\n", 3)
+	socket_send(REPORT_SOCKET, "Bye^n", 5)
 	socket_close(REPORT_SOCKET)
 }
 
