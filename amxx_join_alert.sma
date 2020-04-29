@@ -184,6 +184,16 @@ public say_to_socket(message[], message_length) {
 	new final_message[128]
 
 	if (REPORT_SOCKET > 0) {
+
+		say("[SOCKET] Socket is ready")
+		say("[SOCKET] Waiting for socket to change..")
+
+		if (socket_change(g_sckweb, 1000)) {
+			say("[SOCKET] Socket changed")
+		} else {
+			say("[SOCKET] Socket hasn't changed")
+		}
+
 		format(final_message, charsmax(final_message), "[SOCKET] Sending: '%s' Lentgth: %i", message, message_length)
 		say(final_message)
 		
