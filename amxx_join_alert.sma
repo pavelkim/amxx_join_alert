@@ -188,8 +188,15 @@ public say_to_socket(message[], message_length) {
 		say("[SOCKET] Socket is ready")
 		say("[SOCKET] Waiting for socket to change..")
 
+		if (socket_is_writable(REPORT_SOCKET, 1)) {
+			say("[SOCKET] Socket is writable")
+		} else {
+			say("[SOCKET] Socket is not writable")
+		}
+
 		if (socket_change(REPORT_SOCKET, 1000)) {
 			say("[SOCKET] Socket changed")
+
 			return PLUGIN_CONTINUE
 		} else {
 			say("[SOCKET] Socket hasn't changed")
