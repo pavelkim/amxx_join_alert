@@ -98,7 +98,7 @@ public hook_TeamInfo() {
 }
 
 public task_check_on_socket() {
-	new message[16]
+	new message[24]
 	format(message, charsmax(message), "[SOCKET] State: %i", REPORT_SOCKET)
 	say(message)
 
