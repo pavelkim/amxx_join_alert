@@ -69,28 +69,18 @@ public hook_TeamInfo() {
 	read_data(2, TeamName, charsmax(TeamName))
 	
 	new message[64]
-	format(message, charsmax(message), "[EVENT] TeamInfo: PlayerID: %i TeamName: %s", PlayerID, TeamName[0])
-	say(message)
-
-	format(message, charsmax(message), "TEAM^t%i^t%s^n", PlayerID, player_data[PlayerID][PLAYER_STEAMID], TeamName[0])
+	format(message, charsmax(message), "TEAM^t%i^t%s^t%s^n", PlayerID, player_data[PlayerID][PLAYER_STEAMID], TeamName[0])
 	say_to_socket(message, charsmax(message))
-
 
 	if (!strcmp(player_data[PlayerID][PLAYER_TEAM], "U") && strcmp(TeamName, "U")) {
 		copy(player_data[PlayerID][PLAYER_TEAM], charsmax(TeamName), TeamName)
 		
 		new message[64]
-		format(message, charsmax(message), "[ENTER] PlayerID: %i SteamID: %s TeamName: %s", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
-		say(message)
-
 		format(message, charsmax(message), "ENTER^t%i^t%s^t%s^n", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
 		say_to_socket(message, charsmax(message))
 	
 	} else if (strcmp(player_data[PlayerID][PLAYER_TEAM], "U") && !strcmp(TeamName, "U")) {
 		new message[64]
-		format(message, charsmax(message), "[LEAVE] PlayerID: %i SteamID: %s LastTeamName: %s", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
-		say(message)
-
 		format(message, charsmax(message), "LEAVE^t%i^t%s^t%s^n", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
 		say_to_socket(message, charsmax(message))
 	}
@@ -104,9 +94,6 @@ public task_check_on_socket() {
 
 	if (REPORT_SOCKET > 0) {
 		socket_state = 1
-		format(message, charsmax(message), "[SOCKET] State: %i", socket_state)
-		say(message)
-
 		format(message, charsmax(message), "DEBUG^tS%i^n", socket_state)
 		say_to_socket(message, charsmax(message))
 
@@ -121,7 +108,6 @@ public task_open_socket() {
 
 	new report_socket_error
 
-	say("[SOCKET] Removing socket opening task.")
 	remove_task(TASKID_OPENSOCKET)
 
 	say("[SOCKET] Trying to open a socket")
@@ -149,17 +135,11 @@ public task_open_socket() {
 	say("[SOCKET] Successfully opened a socket.")
 	say_to_socket("Hello^n", 7)
 
-
 	return PLUGIN_CONTINUE
 }
 
 public task_close_socket() {
-
-	say_to_socket("CLOSINGSOCKET^n", 14)
-	socket_close(REPORT_SOCKET)
-
-	say("[SOCKET] Task just have closed the socket.")
-
+	close_socket()
 	return PLUGIN_CONTINUE
 }
 
@@ -172,16 +152,8 @@ public OnAutoConfigsBuffered() {
 
 public client_disconnected(id, drop, message, maxlen) {
 	new message[64]
-	format(message, charsmax(message), "Client Disconnected Event: PlayerID: %i ", id)
-	say(message)
-
-	return true
-}
-
-public client_connect(id) {
-	new message[64]
-	format(message, charsmax(message), "Client Connected Event: PlayerID: %i ", id)
-	say(message)
+	format(message, charsmax(message), "DISCONNECT^t%i^t%s^t%s^n", id, player_data[id][PLAYER_STEAMID], player_data[id][PLAYER_NAME])
+	say_to_socket(message, charsmax(message))
 
 	return true
 }
@@ -220,9 +192,6 @@ public say_to_socket(message[], message_length) {
 	new final_message[128]
 
 	if (is_socket_alive()) {
-		format(final_message, charsmax(final_message), "[SOCKET] Sending: '%s' Lentgth: %i", message, message_length)
-		say(final_message)
-		
 		result = socket_send(REPORT_SOCKET, message, message_length)
 
 		format(final_message, charsmax(final_message), "[SOCKET] Sending result: %i", result)
@@ -246,7 +215,6 @@ public is_socket_alive() {
 			socket_recv(REPORT_SOCKET, REPORT_SOCKET_BUFFER[buffer_idx], 1)
 			
 			if (strlen(REPORT_SOCKET_BUFFER[buffer_idx]) > 0) {
-				new message[1550]
 				say("[SOCKET] Got some data, put it in buffer. Carrying on now.")
 				
 				return true
