@@ -58,7 +58,7 @@ public plugin_cfg() {
 }
 
 public plugin_end() {
-	say_to_socket("Bye^n", 5)
+	say_to_socket2("Bye^n", 5)
 	socket_close(REPORT_SOCKET)
 }
 
@@ -70,19 +70,19 @@ public hook_TeamInfo() {
 	
 	new message[64]
 	format(message, charsmax(message), "TEAM^t%i^t%s^t%s^n", PlayerID, player_data[PlayerID][PLAYER_STEAMID], TeamName[0])
-	say_to_socket(message, charsmax(message))
+	say_to_socket2(message, charsmax(message))
 
 	if (!strcmp(player_data[PlayerID][PLAYER_TEAM], "U") && strcmp(TeamName, "U")) {
 		copy(player_data[PlayerID][PLAYER_TEAM], charsmax(TeamName), TeamName)
 		
 		new message[64]
 		format(message, charsmax(message), "ENTER^t%i^t%s^t%s^n", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
-		say_to_socket(message, charsmax(message))
+		say_to_socket2(message, charsmax(message))
 	
 	} else if (strcmp(player_data[PlayerID][PLAYER_TEAM], "U") && !strcmp(TeamName, "U")) {
 		new message[64]
 		format(message, charsmax(message), "LEAVE^t%i^t%s^t%s^n", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
-		say_to_socket(message, charsmax(message))
+		say_to_socket2(message, charsmax(message))
 	}
 	
 	return PLUGIN_CONTINUE
@@ -95,7 +95,7 @@ public task_check_on_socket() {
 	if (REPORT_SOCKET > 0) {
 		socket_state = 1
 		format(message, charsmax(message), "DEBUG^tS%i^n", socket_state)
-		say_to_socket(message, charsmax(message))
+		say_to_socket2(message, charsmax(message))
 
 	} else {
 		socket_state = -1
@@ -133,7 +133,7 @@ public task_open_socket() {
 	}
 
 	say("[SOCKET] Successfully opened a socket.")
-	say_to_socket("Hello^n", 7)
+	say_to_socket2("Hello^n", 7)
 
 	return PLUGIN_CONTINUE
 }
@@ -153,7 +153,7 @@ public OnAutoConfigsBuffered() {
 public client_disconnected(id, drop, message, maxlen) {
 	new message[64]
 	format(message, charsmax(message), "DISCONNECT^t%i^t%s^t%s^n", id, player_data[id][PLAYER_STEAMID], player_data[id][PLAYER_NAME])
-	say_to_socket(message, charsmax(message))
+	say_to_socket2(message, charsmax(message))
 
 	return true
 }
@@ -175,7 +175,7 @@ public client_putinserver(id) {
 	say(message)
 
 	format(message, charsmax(message), "CONNECT^t%i^t%s^t%s^n", id, player_data[id][PLAYER_STEAMID], player_data[id][PLAYER_NAME])
-	say_to_socket(message, charsmax(message))
+	say_to_socket2(message, charsmax(message))
 
 	return true
 }
@@ -200,6 +200,41 @@ public say_to_socket(message[], message_length) {
 	} else {
 		say("[SOCKET] Socket is not ready. Can't send the message.")
 	}
+
+	return PLUGIN_CONTINUE
+}
+
+public say_to_socket2(message[], message_length) {
+
+	new result
+	new final_message[128]
+	new new_socket
+	new new_socket_error
+
+	new_socket = socket_open(PLUGIN_HOST, PLUGIN_PORT, 1, new_socket_error)
+
+	switch (new_socket_error) {
+		case 1: {
+			say("[SOCKET] Unable to create socket.")
+			return false
+		}
+		case 2: {
+			say("[SOCKET] Unable to connect.")
+			return false
+		}
+		case 3: {
+			say("[SOCKET] Unable to connect to the port.")
+			return false
+		}
+	}
+
+	say("[SOCKET] Successfully opened a socket.")
+
+	result = socket_send(new_socket, message, message_length)
+	format(final_message, charsmax(final_message), "[SOCKET] Sending result: %i", result)
+	say(final_message)
+
+	socket_close()
 
 	return PLUGIN_CONTINUE
 }
