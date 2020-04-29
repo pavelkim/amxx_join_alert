@@ -32,6 +32,8 @@
 
 #define SOCK_NON_BLOCKING 1
 
+#define REPORT_SOCKET_BUFFER_SIZE 32
+
 enum _:player_data_struct {
 	PLAYER_ID,
 	PLAYER_NAME[MAX_NAME_LENGTH * 3],
@@ -40,16 +42,15 @@ enum _:player_data_struct {
 }
 
 new player_data[MAX_PLAYERS + 1][player_data_struct]
+
 new REPORT_SOCKET
+new REPORT_SOCKET_BUFFER[REPORT_SOCKET_BUFFER_SIZE]
+new REPORT_SOCKET_BUFFER_USED = 0
 
 public plugin_init() {
 
 	register_plugin(PLUGIN, VERSION, AUTHOR)
 	register_event("TeamInfo", "hook_TeamInfo", "a")
-
-	// set_task(1.0, "task_check_on_socket", TASKID_GETANSWER, "", 0, "b") 
-	// set_task(20.0, "task_close_socket", TASKID_CLOSESOCKET, "", 0, "a", 1) 
-
 }
 
 public plugin_cfg() {
@@ -71,13 +72,16 @@ public hook_TeamInfo() {
 	format(message, charsmax(message), "[EVENT] TeamInfo: PlayerID: %i TeamName: %s", PlayerID, TeamName[0])
 	say(message)
 
+	format(message, charsmax(message), "TEAM^t%i^t%s^n", PlayerID, player_data[PlayerID][PLAYER_STEAMID], TeamName[0])
+	say_to_socket(message, charsmax(message))
+
+
 	if (!strcmp(player_data[PlayerID][PLAYER_TEAM], "U") && strcmp(TeamName, "U")) {
 		copy(player_data[PlayerID][PLAYER_TEAM], charsmax(TeamName), TeamName)
 		
 		new message[64]
 		format(message, charsmax(message), "[ENTER] PlayerID: %i SteamID: %s TeamName: %s", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
 		say(message)
-
 
 		format(message, charsmax(message), "ENTER^t%i^t%s^t%s^n", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
 		say_to_socket(message, charsmax(message))
@@ -108,39 +112,6 @@ public task_check_on_socket() {
 
 	} else {
 		socket_state = -1
-	}
-
-
-	return PLUGIN_CONTINUE
-}
-
-public task_read_from_socket() {
-	
-	new socket_data[1500]
-	new socket_state
-
-	say("[SOCKET] Reading from socket..")
-
-	if (REPORT_SOCKET > 0) {
-		say("[SOCKET] Socket is ready")
-		socket_recv(REPORT_SOCKET, socket_data, 1500)
-
-		if (strlen(socket_data) > 0) {
-			new message[1550]
-			say("[SOCKET] Got some data")
-
-			format(message, charsmax(message), "[SOCKET] Recieved: '%s'", socket_data)
-			say(message)
-
-		} else {
-			say("[SOCKET] Got nothing, probably a dead connection.")
-			close_socket()
-			prepare_socket()
-		}
-
-	} else {
-		say("[SOCKET] Socket is not ready, calling prepare_socket function")
-		prepare_socket()
 	}
 
 	return PLUGIN_CONTINUE
@@ -249,20 +220,7 @@ public say_to_socket(message[], message_length) {
 	new result
 	new final_message[128]
 
-	if (REPORT_SOCKET > 0) {
-		say("[SOCKET] Socket is ready")
-		say("[SOCKET] Waiting for socket to change..")
-
-		if (socket_change(REPORT_SOCKET, 1000)) {
-			say("[SOCKET] Socket changed")
-			// set_task(0.1, "task_read_from_socket", TASKID_READSOCKET, "", 0, "a", 1) 
-			task_read_from_socket()
-			// return PLUGIN_CONTINUE
-
-		} else {
-			say("[SOCKET] Socket hasn't changed")
-		}
-
+	if (is_socket_alive()) {
 		format(final_message, charsmax(final_message), "[SOCKET] Sending: '%s' Lentgth: %i", message, message_length)
 		say(final_message)
 		
@@ -271,17 +229,46 @@ public say_to_socket(message[], message_length) {
 		format(final_message, charsmax(final_message), "[SOCKET] Sending result: %i", result)
 		say(final_message)
 
-		if (result < 0) {
-			say("[SOCKET] Result was negative, calling prepare_socket function.")
-			prepare_socket()
-		}
-
 	} else {
-		say("[SOCKET] Socket is not ready, calling prepare_socket function.")
-		prepare_socket()
+		say("[SOCKET] Socket is not ready. Can't send the message.")
 	}
 
 	return PLUGIN_CONTINUE
+}
+
+public is_socket_alive() {
+
+	if (REPORT_SOCKET > 0) {
+
+		if (socket_change(REPORT_SOCKET, 1)) {
+			// TODO: Buffer out of bound
+			REPORT_SOCKET_BUFFER_USED++
+			new buffer_idx = REPORT_SOCKET_BUFFER_USED - 1
+			socket_recv(REPORT_SOCKET, SOCKET_BUFFER_STRUCT[buffer_idx], 1)
+			
+			if (strlen(SOCKET_BUFFER_STRUCT[buffer_idx]) > 0) {
+				new message[1550]
+				say("[SOCKET] Got some data, put it in buffer. Carrying on now.")
+				
+				return true
+
+			} else {
+				say("[SOCKET] Got nothing, probably a dead connection.")
+
+				close_socket()
+				prepare_socket()
+
+				return false
+			}
+
+		} else	{
+			return true
+		}
+
+	} else {
+		prepare_socket()
+		return false		
+	}
 }
 
 public prepare_socket() {
@@ -289,7 +276,7 @@ public prepare_socket() {
 	if ( !task_exists(TASKID_OPENSOCKET) ) {
 		new task_param[1]
 		format(task_param, 1, "%i", TASKID_OPENSOCKET)
-		set_task(1.0, "task_open_socket", TASKID_OPENSOCKET, task_param, 1, "b")
+		set_task(0.5, "task_open_socket", TASKID_OPENSOCKET, task_param, 1, "b")
 	
 	} else {
 		say("[SOCKET] Socket opening task already exists.")
