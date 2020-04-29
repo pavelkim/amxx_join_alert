@@ -129,6 +129,15 @@ public task_read_from_socket() {
 		format(message, charsmax(message), "[SOCKET] Recieved: '%s'", socket_data)
 		say(message)
 
+		if (REPORT_SOCKET > 0) {
+			say("[SOCKET] Socket is ready")
+	
+		} else {
+			say("[SOCKET] Socket is not ready, calling prepare_socket function")
+			prepare_socket()
+		}
+
+
 	} else {
 		say("[SOCKET] Socket is not ready, calling prepare_socket function")
 		prepare_socket()
@@ -247,7 +256,8 @@ public say_to_socket(message[], message_length) {
 
 		if (socket_change(REPORT_SOCKET, 1000)) {
 			say("[SOCKET] Socket changed")
-			set_task(0.1, "task_read_from_socket", TASKID_READSOCKET, "", 0, "a", 1) 
+			// set_task(0.1, "task_read_from_socket", TASKID_READSOCKET, "", 0, "a", 1) 
+			task_read_from_socket()
 			// return PLUGIN_CONTINUE
 
 		} else {
