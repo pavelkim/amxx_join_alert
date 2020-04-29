@@ -105,7 +105,7 @@ public task_check_on_socket() {
 	return PLUGIN_CONTINUE
 }
 
-public task_check_on_socket() {
+public task_close_socket() {
 	socket_close(REPORT_SOCKET)
 	say("[SOCKET] Task just have closed the socket.")
 
