@@ -37,7 +37,7 @@ public plugin_init() {
 
 }
 
-public task_open_socket() {
+public plugin_cfg() {
 	new report_socket_error
 	REPORT_SOCKET = socket_open(PLUGIN_HOST, PLUGIN_PORT, 1, report_socket_error)
 
