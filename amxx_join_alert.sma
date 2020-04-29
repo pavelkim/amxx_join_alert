@@ -116,6 +116,9 @@ public task_open_socket() {
 	new report_socket_error
 	new self_task_id = read_data(1)
 
+	say("[SOCKET] Removing socket opening task.")
+	remove_task(self_task_id)
+
 	say("[SOCKET] Trying to open a socket")
 
 	REPORT_SOCKET = socket_open(PLUGIN_HOST, PLUGIN_PORT, 1, report_socket_error)
@@ -123,14 +126,17 @@ public task_open_socket() {
 	switch (report_socket_error) {
 		case 1: {
 			say("[SOCKET] Unable to create socket.")
+			prepare_socket()
 			return false
 		}
 		case 2: {
 			say("[SOCKET] Unable to connect.")
+			prepare_socket()
 			return false
 		}
 		case 3: {
 			say("[SOCKET] Unable to connect to the port.")
+			prepare_socket()
 			return false
 		}
 	}
@@ -138,8 +144,6 @@ public task_open_socket() {
 	say("[SOCKET] Successfully opened a socket.")
 	say_to_socket("Hello^n", 7)
 
-	say("[SOCKET] Removing socket opening task.")
-	remove_task(self_task_id)
 
 	return PLUGIN_CONTINUE
 }
