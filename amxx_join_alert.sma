@@ -1,3 +1,14 @@
+/*
+
+	Sends player connection/joining information over a TCP connection
+
+	TODO:
+	- Sending to socket as tasks that should loop until the socket is ready
+	- TTL and Queue Size for sending task queue
+	- Move configuration to CVARs
+	- Call reconnect on sending result < 0
+
+*/
 #include <amxmodx>
 #include <sockets>
 
@@ -13,6 +24,7 @@
 
 #define TASKID_GETANSWER 0
 #define TASKID_CLOSESOCKET 1
+#define TASKID_OPENSOCKET 2
 
 #define SOCK_NON_BLOCKING 1
 
@@ -37,25 +49,7 @@ public plugin_init() {
 }
 
 public plugin_cfg() {
-	new report_socket_error
-	REPORT_SOCKET = socket_open(PLUGIN_HOST, PLUGIN_PORT, 1, report_socket_error)
-
-	switch (report_socket_error) {
-		case 1: {
-			say("[JOIN ALERT] Unable to create socket.")
-			return
-		}
-		case 2: {
-			say("[JOIN ALERT] Unable to connect.")
-			return
-		}
-		case 3: {
-			say("[JOIN ALERT] Unable to connect to the port.")
-			return
-		}
-	}
-
-	say_to_socket("Hello^n", 7)
+	prepare_socket()
 }
 
 public plugin_end() {
@@ -74,7 +68,6 @@ public hook_TeamInfo() {
 	say(message)
 
 	if (!strcmp(player_data[PlayerID][PLAYER_TEAM], "U") && strcmp(TeamName, "U")) {
-
 		copy(player_data[PlayerID][PLAYER_TEAM], charsmax(TeamName), TeamName)
 		
 		new message[64]
@@ -86,7 +79,6 @@ public hook_TeamInfo() {
 		say_to_socket(message, charsmax(message))
 	
 	} else if (strcmp(player_data[PlayerID][PLAYER_TEAM], "U") && !strcmp(TeamName, "U")) {
-
 		new message[64]
 		format(message, charsmax(message), "[LEAVE] PlayerID: %i SteamID: %s LastTeamName: %s", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
 		say(message)
@@ -109,10 +101,40 @@ public task_check_on_socket() {
 
 		format(message, charsmax(message), "DEBUG^tS%i^n", socket_state)
 		say_to_socket(message, charsmax(message))
+
 	} else {
 		socket_state = -1
 	}
 
+
+	return PLUGIN_CONTINUE
+}
+
+public task_open_socket(self_task_id) {
+
+	new report_socket_error
+
+	say("[SOCKET] Trying to open a socket")
+
+	REPORT_SOCKET = socket_open(PLUGIN_HOST, PLUGIN_PORT, 1, report_socket_error)
+
+	switch (report_socket_error) {
+		case 1: {
+			say("[SOCKET] Unable to create socket.")
+			return
+		}
+		case 2: {
+			say("[SOCKET] Unable to connect.")
+			return
+		}
+		case 3: {
+			say("[SOCKET] Unable to connect to the port.")
+			return
+		}
+	}
+
+	say_to_socket("Hello^n", 7)
+	remove_task(self_task_id)
 
 	return PLUGIN_CONTINUE
 }
@@ -184,7 +206,6 @@ public say_to_socket(message[], message_length) {
 	new final_message[128]
 
 	if (REPORT_SOCKET > 0) {
-
 		say("[SOCKET] Socket is ready")
 		say("[SOCKET] Waiting for socket to change..")
 
@@ -210,10 +231,28 @@ public say_to_socket(message[], message_length) {
 		format(final_message, charsmax(final_message), "[SOCKET] Sending result: %i", result)
 		say(final_message)
 
+		if (result < 0) {
+			say("[SOCKET] Result was negative, calling prepare_socket function.")
+			prepare_socket()
+		}
+
 	} else {
-		say("[SOCKET] Socket is not ready, ignoring.")
+		say("[SOCKET] Socket is not ready, calling prepare_socket function.")
+		prepare_socket()
 	}
 
+	return PLUGIN_CONTINUE
+}
+
+public prepare_socket() {
+	
+	if ( !task_exists(TASKID_OPENSOCKET) ) {
+		set_task(1.0, "task_open_socket", TASKID_OPENSOCKET, TASKID_OPENSOCKET, 1, "b")
+	
+	} else {
+		say("[SOCKET] Socket opening task already exists.")
+	}
+	
 	return PLUGIN_CONTINUE
 }
 
