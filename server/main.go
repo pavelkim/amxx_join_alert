@@ -6,7 +6,10 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 )
 
 func handleConnection(connection net.Conn) {
@@ -26,15 +29,26 @@ func handleConnection(connection net.Conn) {
 			return
 		}
 
+		fmt.Printf("[%s] %s\n", connection.RemoteAddr().String(), strings.TrimRight(data, "\n"))
+
 		temp := strings.TrimSpace(string(data))
 		if temp == "STOP" {
 			break
 		}
-		// connection.Write([]byte("H\n"))
 	}
 
 	fmt.Printf("Closing %s\n", connection.RemoteAddr().String())
 	connection.Close()
+}
+
+func handleSignal() {
+	signalChannel := make(chan os.Signal)
+	signal.Notify(signalChannel, os.Interrupt, syscall.SIGTERM)
+
+	go func() {
+		<-signalChannel
+		os.Exit(0)
+	}()
 }
 
 func main() {
