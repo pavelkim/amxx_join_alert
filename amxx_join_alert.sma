@@ -34,24 +34,24 @@ public plugin_cfg() {
 
 	switch (report_socket_error) {
 		case 1: {
-			log_amx("[JOIN ALERT] Unable to create socket.")
+			say("[JOIN ALERT] Unable to create socket.")
 			return
 		}
 		case 2: {
-			log_amx("[JOIN ALERT] Unable to connect.")
+			say("[JOIN ALERT] Unable to connect.")
 			return
 		}
 		case 3: {
-			log_amx("[JOIN ALERT] Unable to connect to the port.")
+			say("[JOIN ALERT] Unable to connect to the port.")
 			return
 		}
 	}
 
-	socket_send(REPORT_SOCKET, "Hello", 5)
+	socket_send(REPORT_SOCKET, "Hello\n", 5)
 }
 
 public plugin_end() {
-	socket_send(REPORT_SOCKET, "Bye", 3)
+	socket_send(REPORT_SOCKET, "Bye\n", 3)
 	socket_close(REPORT_SOCKET)
 }
 
@@ -74,7 +74,7 @@ public hook_TeamInfo() {
 		say(message)
 
 
-		format(message, charsmax(message), "ENTER\t%i\t%s\t%s", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
+		format(message, charsmax(message), "ENTER^t%i^t%s^t%s^n", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
 		socket_send(REPORT_SOCKET, message, charsmax(message))
 	
 	} else if (strcmp(player_data[PlayerID][PLAYER_TEAM], "U") && !strcmp(TeamName, "U")) {
@@ -83,7 +83,7 @@ public hook_TeamInfo() {
 		format(message, charsmax(message), "[LEAVE] PlayerID: %i SteamID: %s LastTeamName: %s", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
 		say(message)
 
-		format(message, charsmax(message), "LEAVE\t%i\t%s\t%s", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
+		format(message, charsmax(message), "LEAVE^t%i^t%s^t%s^n", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
 		socket_send(REPORT_SOCKET, message, charsmax(message))
 	}
 	
@@ -129,7 +129,7 @@ public client_putinserver(id) {
 	format(message, charsmax(message), "[CONNECT] PlayerID: %i SteamID: %s Name: %s", id, player_data[id][PLAYER_STEAMID], player_data[id][PLAYER_NAME])
 	say(message)
 
-	format(message, charsmax(message), "CONNECT\t%i\t%s\t%s", id, player_data[id][PLAYER_STEAMID], player_data[id][PLAYER_NAME])
+	format(message, charsmax(message), "CONNECT^t%i^t%s^t%s^n", id, player_data[id][PLAYER_STEAMID], player_data[id][PLAYER_NAME])
 	socket_send(REPORT_SOCKET, message, charsmax(message))
 
 	return true
