@@ -8,6 +8,7 @@
 	- Move configuration to CVARs
 	- Call reconnect on sending result < 0
 	- Better handle socket changing
+	- Fix how task id is being passed to task_open_socket
 
 */
 #include <amxmodx>
@@ -117,7 +118,7 @@ public task_open_socket() {
 	new self_task_id = read_data(1)
 
 	say("[SOCKET] Removing socket opening task.")
-	remove_task(self_task_id)
+	remove_task(TASKID_OPENSOCKET)
 
 	say("[SOCKET] Trying to open a socket")
 
