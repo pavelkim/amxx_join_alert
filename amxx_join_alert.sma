@@ -31,12 +31,13 @@ public plugin_init() {
 	register_plugin(PLUGIN, VERSION, AUTHOR)
 	register_event("TeamInfo", "hook_TeamInfo", "a")
 
-    set_task(1.0, "task_check_on_socket", TASKID_GETANSWER, "", 0, "b") 
-    set_task(20.0, "task_close_socket", TASKID_CLOSESOCKET, "", 0, "a", 1) 
+	set_task(1.0, "task_open_socket", TASKID_GETANSWER, "", 0, "b") 
+	set_task(1.0, "task_check_on_socket", TASKID_GETANSWER, "", 0, "b") 
+	set_task(20.0, "task_close_socket", TASKID_CLOSESOCKET, "", 0, "a", 1) 
 
 }
 
-public plugin_cfg() {
+public task_open_socket() {
 	new report_socket_error
 	REPORT_SOCKET = socket_open(PLUGIN_HOST, PLUGIN_PORT, 1, report_socket_error)
 
@@ -55,11 +56,11 @@ public plugin_cfg() {
 		}
 	}
 
-	socket_send(REPORT_SOCKET, "Hello^n", 7)
+	say_to_socket(REPORT_SOCKET, "Hello^n", 7)
 }
 
 public plugin_end() {
-	socket_send(REPORT_SOCKET, "Bye^n", 5)
+	say_to_socket(REPORT_SOCKET, "Bye^n", 5)
 	socket_close(REPORT_SOCKET)
 }
 
@@ -83,7 +84,7 @@ public hook_TeamInfo() {
 
 
 		format(message, charsmax(message), "ENTER^t%i^t%s^t%s^n", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
-		socket_send(REPORT_SOCKET, message, charsmax(message))
+		say_to_socket(REPORT_SOCKET, message, charsmax(message))
 	
 	} else if (strcmp(player_data[PlayerID][PLAYER_TEAM], "U") && !strcmp(TeamName, "U")) {
 
@@ -92,7 +93,7 @@ public hook_TeamInfo() {
 		say(message)
 
 		format(message, charsmax(message), "LEAVE^t%i^t%s^t%s^n", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
-		socket_send(REPORT_SOCKET, message, charsmax(message))
+		say_to_socket(REPORT_SOCKET, message, charsmax(message))
 	}
 	
 	return PLUGIN_CONTINUE
@@ -101,26 +102,26 @@ public hook_TeamInfo() {
 public task_check_on_socket() {
 	new message[24]
 	new socket_state
-	new socket_send_result = 
+	new say_to_socket_result
 
 	if (REPORT_SOCKET > 0) {
 		socket_state = 1
+		format(message, charsmax(message), "[SOCKET] State: %i", socket_state)
+		say(message)
+
+		format(message, charsmax(message), "DEBUG^tS%i^n", socket_state)
+		say_to_socket(REPORT_SOCKET, message, charsmax(message))
 	} else {
 		socket_state = -1
 	}
 
-	format(message, charsmax(message), "[SOCKET] State: %i", socket_state)
-	say(message)
-
-	format(message, charsmax(message), "DEBUG^tS%i^n", socket_state)
-	socket_send(REPORT_SOCKET, message, charsmax(message))
 
 	return PLUGIN_CONTINUE
 }
 
 public task_close_socket() {
 
-	socket_send(REPORT_SOCKET, "CLOSINGSOCKET^n", 14)
+	say_to_socket(REPORT_SOCKET, "CLOSINGSOCKET^n", 14)
 	socket_close(REPORT_SOCKET)
 
 	say("[SOCKET] Task just have closed the socket.")
@@ -168,7 +169,7 @@ public client_putinserver(id) {
 	say(message)
 
 	format(message, charsmax(message), "CONNECT^t%i^t%s^t%s^n", id, player_data[id][PLAYER_STEAMID], player_data[id][PLAYER_NAME])
-	socket_send(REPORT_SOCKET, message, charsmax(message))
+	say_to_socket(REPORT_SOCKET, message, charsmax(message))
 
 	return true
 }
@@ -178,3 +179,26 @@ public say(message[]) {
 	format(final_message, charsmax(final_message), "[JOIN ALERT] %s", message)
 	log_message(final_message)
 }
+
+public say_to_socket(message[]) {
+
+	new result
+	new final_message[128]
+
+	if (REPORT_SOCKET > 0) {
+		format(final_message, charsmax(final_message), "[SOCKET] Sending: %s", message)
+		say(final_message)
+		
+		format(final_message, charsmax(final_message), message)
+		result = socket_send(REPORT_SOCKET, final_message, charsmax(final_message))
+
+		format(final_message, charsmax(final_message), "[SOCKET] Sending result: %i", result)
+		say(final_message)
+
+	} else {
+		say("[SOCKET] Socket is not ready, ignoring.")
+	}
+
+	return PLUGIN_CONTINUE
+}
+
