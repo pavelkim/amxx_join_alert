@@ -120,7 +120,6 @@ public task_check_on_socket() {
 public task_open_socket() {
 
 	new report_socket_error
-	new self_task_id = read_data(1)
 
 	say("[SOCKET] Removing socket opening task.")
 	remove_task(TASKID_OPENSOCKET)
@@ -244,9 +243,9 @@ public is_socket_alive() {
 			// TODO: Buffer out of bound
 			REPORT_SOCKET_BUFFER_USED++
 			new buffer_idx = REPORT_SOCKET_BUFFER_USED - 1
-			socket_recv(REPORT_SOCKET, SOCKET_BUFFER_STRUCT[buffer_idx], 1)
+			socket_recv(REPORT_SOCKET, REPORT_SOCKET_BUFFER[buffer_idx], 1)
 			
-			if (strlen(SOCKET_BUFFER_STRUCT[buffer_idx]) > 0) {
+			if (strlen(REPORT_SOCKET_BUFFER[buffer_idx]) > 0) {
 				new message[1550]
 				say("[SOCKET] Got some data, put it in buffer. Carrying on now.")
 				
