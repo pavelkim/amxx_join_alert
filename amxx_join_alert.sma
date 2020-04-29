@@ -124,25 +124,24 @@ public task_read_from_socket() {
 	if (REPORT_SOCKET > 0) {
 		say("[SOCKET] Socket is ready")
 		socket_recv(REPORT_SOCKET, socket_data, 1500)
-		
-		new message[1550]
-		format(message, charsmax(message), "[SOCKET] Recieved: '%s'", socket_data)
-		say(message)
 
-		if (REPORT_SOCKET > 0) {
-			say("[SOCKET] Socket is ready")
-	
+		if (strlen(socket_data) > 0) {
+			new message[1550]
+			say("[SOCKET] Got some data")
+
+			format(message, charsmax(message), "[SOCKET] Recieved: '%s'", socket_data)
+			say(message)
+
 		} else {
-			say("[SOCKET] Socket is not ready, calling prepare_socket function")
+			say("[SOCKET] Got nothing, probably a dead connection.")
+			close_socket()
 			prepare_socket()
 		}
-
 
 	} else {
 		say("[SOCKET] Socket is not ready, calling prepare_socket function")
 		prepare_socket()
 	}
-
 
 	return PLUGIN_CONTINUE
 }
@@ -299,3 +298,7 @@ public prepare_socket() {
 	return PLUGIN_CONTINUE
 }
 
+public close_socket() {
+	socket_close(REPORT_SOCKET)
+	return PLUGIN_CONTINUE
+}
