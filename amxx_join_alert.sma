@@ -243,8 +243,8 @@ public say_to_socket(message[], message_length) {
 public prepare_socket() {
 	
 	if ( !task_exists(TASKID_OPENSOCKET) ) {
-		new task_param
-		num_to_str(TASKID_OPENSOCKET, task_param, 1)
+		new task_param[]
+		format(task_param, 1, "%i", TASKID_OPENSOCKET)
 		set_task(1.0, "task_open_socket", TASKID_OPENSOCKET, task_param, 1, "b")
 	
 	} else {
