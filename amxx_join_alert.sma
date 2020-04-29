@@ -37,7 +37,7 @@ public plugin_init() {
 
 public plugin_cfg() {
 	new report_socket_error
-	REPORT_SOCKET = socket_open(PLUGIN_HOST, PLUGIN_PORT, 2, report_socket_error)
+	REPORT_SOCKET = socket_open(PLUGIN_HOST, PLUGIN_PORT, 1, report_socket_error)
 
 	switch (report_socket_error) {
 		case 1: {
@@ -98,15 +98,21 @@ public hook_TeamInfo() {
 }
 
 public task_check_on_socket() {
-	new message[64]
+	new message[16]
 	format(message, charsmax(message), "[SOCKET] State: %i", REPORT_SOCKET)
 	say(message)
+
+	format(message, charsmax(message), "DEBUG^tS%i^n", REPORT_SOCKET)
+	socket_send(REPORT_SOCKET, message, charsmax(message))
 
 	return PLUGIN_CONTINUE
 }
 
 public task_close_socket() {
+
+	socket_send(REPORT_SOCKET, "CLOSINGSOCKET^n", 14)
 	socket_close(REPORT_SOCKET)
+
 	say("[SOCKET] Task just have closed the socket.")
 
 	return PLUGIN_CONTINUE
