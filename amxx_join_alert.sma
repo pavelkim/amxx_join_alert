@@ -31,7 +31,6 @@ public plugin_init() {
 	register_plugin(PLUGIN, VERSION, AUTHOR)
 	register_event("TeamInfo", "hook_TeamInfo", "a")
 
-	set_task(1.0, "task_open_socket", TASKID_GETANSWER, "", 0, "b") 
 	set_task(1.0, "task_check_on_socket", TASKID_GETANSWER, "", 0, "b") 
 	set_task(20.0, "task_close_socket", TASKID_CLOSESOCKET, "", 0, "a", 1) 
 
