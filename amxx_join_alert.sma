@@ -111,9 +111,10 @@ public task_check_on_socket() {
 	return PLUGIN_CONTINUE
 }
 
-public task_open_socket(self_task_id) {
+public task_open_socket() {
 
 	new report_socket_error
+	new self_task_id = read_data(1)
 
 	say("[SOCKET] Trying to open a socket")
 
@@ -134,7 +135,10 @@ public task_open_socket(self_task_id) {
 		}
 	}
 
+	say("[SOCKET] Successfully opened a socket.")
 	say_to_socket("Hello^n", 7)
+
+	say("[SOCKET] Removing socket opening task.")
 	remove_task(self_task_id)
 
 	return PLUGIN_CONTINUE
@@ -243,7 +247,7 @@ public say_to_socket(message[], message_length) {
 public prepare_socket() {
 	
 	if ( !task_exists(TASKID_OPENSOCKET) ) {
-		new task_param[]
+		new task_param[1]
 		format(task_param, 1, "%i", TASKID_OPENSOCKET)
 		set_task(1.0, "task_open_socket", TASKID_OPENSOCKET, task_param, 1, "b")
 	
