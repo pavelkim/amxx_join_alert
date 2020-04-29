@@ -9,6 +9,7 @@
 	- Call reconnect on sending result < 0
 	- Better handle socket changing
 	- Fix how task id is being passed to task_open_socket
+	- Review log messages, check for grammar
 
 */
 #include <amxmodx>
@@ -27,6 +28,7 @@
 #define TASKID_GETANSWER 0
 #define TASKID_CLOSESOCKET 1
 #define TASKID_OPENSOCKET 2
+#define TASKID_READSOCKET 2
 
 #define SOCK_NON_BLOCKING 1
 
@@ -106,6 +108,30 @@ public task_check_on_socket() {
 
 	} else {
 		socket_state = -1
+	}
+
+
+	return PLUGIN_CONTINUE
+}
+
+public task_read_from_socket() {
+	
+	new socket_data[1500]
+	new socket_state
+
+	say("[SOCKET] Reading from socket..")
+
+	if (REPORT_SOCKET > 0) {
+		say("[SOCKET] Socket is ready")
+		socket_recv(REPORT_SOCKET, socket_data, 1500)
+		
+		new message[1550]
+		format(message, charsmax(message), "[SOCKET] Recieved: '%s'", socket_data)
+		say(message)
+
+	} else {
+		say("[SOCKET] Socket is not ready, calling prepare_socket function")
+		prepare_socket()
 	}
 
 
@@ -221,8 +247,8 @@ public say_to_socket(message[], message_length) {
 
 		if (socket_change(REPORT_SOCKET, 1000)) {
 			say("[SOCKET] Socket changed")
-			
-			return PLUGIN_CONTINUE
+			set_task(0.1, "task_read_from_socket", TASKID_READSOCKET, "", 0, "a", 1) 
+			// return PLUGIN_CONTINUE
 
 		} else {
 			say("[SOCKET] Socket hasn't changed")
