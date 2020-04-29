@@ -234,7 +234,7 @@ public say_to_socket2(message[], message_length) {
 	format(final_message, charsmax(final_message), "[SOCKET] Sending result: %i", result)
 	say(final_message)
 
-	socket_close()
+	socket_close(new_socket)
 
 	return PLUGIN_CONTINUE
 }
