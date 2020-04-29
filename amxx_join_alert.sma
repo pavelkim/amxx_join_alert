@@ -190,6 +190,7 @@ public say_to_socket(message[], message_length) {
 
 		if (socket_change(REPORT_SOCKET, 1000)) {
 			say("[SOCKET] Socket changed")
+			return PLUGIN_CONTINUE
 		} else {
 			say("[SOCKET] Socket hasn't changed")
 		}
