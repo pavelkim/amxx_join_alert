@@ -56,11 +56,11 @@ public task_open_socket() {
 		}
 	}
 
-	say_to_socket(REPORT_SOCKET, "Hello^n", 7)
+	say_to_socket("Hello^n", 7)
 }
 
 public plugin_end() {
-	say_to_socket(REPORT_SOCKET, "Bye^n", 5)
+	say_to_socket("Bye^n", 5)
 	socket_close(REPORT_SOCKET)
 }
 
@@ -84,7 +84,7 @@ public hook_TeamInfo() {
 
 
 		format(message, charsmax(message), "ENTER^t%i^t%s^t%s^n", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
-		say_to_socket(REPORT_SOCKET, message, charsmax(message))
+		say_to_socket(message, charsmax(message))
 	
 	} else if (strcmp(player_data[PlayerID][PLAYER_TEAM], "U") && !strcmp(TeamName, "U")) {
 
@@ -93,7 +93,7 @@ public hook_TeamInfo() {
 		say(message)
 
 		format(message, charsmax(message), "LEAVE^t%i^t%s^t%s^n", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
-		say_to_socket(REPORT_SOCKET, message, charsmax(message))
+		say_to_socket(message, charsmax(message))
 	}
 	
 	return PLUGIN_CONTINUE
@@ -102,7 +102,6 @@ public hook_TeamInfo() {
 public task_check_on_socket() {
 	new message[24]
 	new socket_state
-	new say_to_socket_result
 
 	if (REPORT_SOCKET > 0) {
 		socket_state = 1
@@ -110,7 +109,7 @@ public task_check_on_socket() {
 		say(message)
 
 		format(message, charsmax(message), "DEBUG^tS%i^n", socket_state)
-		say_to_socket(REPORT_SOCKET, message, charsmax(message))
+		say_to_socket(message, charsmax(message))
 	} else {
 		socket_state = -1
 	}
@@ -121,7 +120,7 @@ public task_check_on_socket() {
 
 public task_close_socket() {
 
-	say_to_socket(REPORT_SOCKET, "CLOSINGSOCKET^n", 14)
+	say_to_socket("CLOSINGSOCKET^n", 14)
 	socket_close(REPORT_SOCKET)
 
 	say("[SOCKET] Task just have closed the socket.")
@@ -169,7 +168,7 @@ public client_putinserver(id) {
 	say(message)
 
 	format(message, charsmax(message), "CONNECT^t%i^t%s^t%s^n", id, player_data[id][PLAYER_STEAMID], player_data[id][PLAYER_NAME])
-	say_to_socket(REPORT_SOCKET, message, charsmax(message))
+	say_to_socket(message, charsmax(message))
 
 	return true
 }
@@ -180,17 +179,16 @@ public say(message[]) {
 	log_message(final_message)
 }
 
-public say_to_socket(message[]) {
+public say_to_socket(message[], message_length) {
 
 	new result
 	new final_message[128]
 
 	if (REPORT_SOCKET > 0) {
-		format(final_message, charsmax(final_message), "[SOCKET] Sending: %s", message)
+		format(final_message, charsmax(final_message), "[SOCKET] Sending: '%s' Lentgth: %i", message, message_length)
 		say(final_message)
 		
-		format(final_message, charsmax(final_message), message)
-		result = socket_send(REPORT_SOCKET, final_message, charsmax(final_message))
+		result = socket_send(REPORT_SOCKET, message, message_length)
 
 		format(final_message, charsmax(final_message), "[SOCKET] Sending result: %i", result)
 		say(final_message)
