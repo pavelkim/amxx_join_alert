@@ -7,6 +7,7 @@
 	- TTL and Queue Size for sending task queue
 	- Move configuration to CVARs
 	- Call reconnect on sending result < 0
+	- Better handle socket changing
 
 */
 #include <amxmodx>
@@ -121,15 +122,15 @@ public task_open_socket(self_task_id) {
 	switch (report_socket_error) {
 		case 1: {
 			say("[SOCKET] Unable to create socket.")
-			return
+			return false
 		}
 		case 2: {
 			say("[SOCKET] Unable to connect.")
-			return
+			return false
 		}
 		case 3: {
 			say("[SOCKET] Unable to connect to the port.")
-			return
+			return false
 		}
 	}
 
@@ -209,16 +210,11 @@ public say_to_socket(message[], message_length) {
 		say("[SOCKET] Socket is ready")
 		say("[SOCKET] Waiting for socket to change..")
 
-		if (socket_is_writable(REPORT_SOCKET, 1)) {
-			say("[SOCKET] Socket is writable")
-		} else {
-			say("[SOCKET] Socket is not writable")
-		}
-
 		if (socket_change(REPORT_SOCKET, 1000)) {
 			say("[SOCKET] Socket changed")
-
+			
 			return PLUGIN_CONTINUE
+
 		} else {
 			say("[SOCKET] Socket hasn't changed")
 		}
@@ -247,7 +243,9 @@ public say_to_socket(message[], message_length) {
 public prepare_socket() {
 	
 	if ( !task_exists(TASKID_OPENSOCKET) ) {
-		set_task(1.0, "task_open_socket", TASKID_OPENSOCKET, TASKID_OPENSOCKET, 1, "b")
+		new task_param
+		num_to_str(TASKID_OPENSOCKET, task_param, 1)
+		set_task(1.0, "task_open_socket", TASKID_OPENSOCKET, task_param, 1, "b")
 	
 	} else {
 		say("[SOCKET] Socket opening task already exists.")
