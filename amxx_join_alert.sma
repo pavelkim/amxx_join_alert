@@ -25,14 +25,8 @@
 #define PLUGIN_HOST "127.0.0.1"
 #define PLUGIN_PORT 28000
 
-#define TASKID_GETANSWER 0
-#define TASKID_CLOSESOCKET 1
-#define TASKID_OPENSOCKET 2
-#define TASKID_READSOCKET 2
-
 #define SOCK_NON_BLOCKING 1
 
-#define REPORT_SOCKET_BUFFER_SIZE 32
 
 enum _:player_data_struct {
 	PLAYER_ID,
@@ -43,23 +37,9 @@ enum _:player_data_struct {
 
 new player_data[MAX_PLAYERS + 1][player_data_struct]
 
-new REPORT_SOCKET
-new REPORT_SOCKET_BUFFER[REPORT_SOCKET_BUFFER_SIZE]
-new REPORT_SOCKET_BUFFER_USED = 0
-
 public plugin_init() {
-
 	register_plugin(PLUGIN, VERSION, AUTHOR)
 	register_event("TeamInfo", "hook_TeamInfo", "a")
-}
-
-public plugin_cfg() {
-	prepare_socket()
-}
-
-public plugin_end() {
-	say_to_socket2("Bye^n", 5)
-	socket_close(REPORT_SOCKET)
 }
 
 public hook_TeamInfo() {
@@ -88,60 +68,6 @@ public hook_TeamInfo() {
 	return PLUGIN_CONTINUE
 }
 
-public task_check_on_socket() {
-	new message[24]
-	new socket_state
-
-	if (REPORT_SOCKET > 0) {
-		socket_state = 1
-		format(message, charsmax(message), "DEBUG^tS%i^n", socket_state)
-		say_to_socket2(message, charsmax(message))
-
-	} else {
-		socket_state = -1
-	}
-
-	return PLUGIN_CONTINUE
-}
-
-public task_open_socket() {
-
-	new report_socket_error
-
-	remove_task(TASKID_OPENSOCKET)
-
-	say("[SOCKET] Trying to open a socket")
-
-	REPORT_SOCKET = socket_open(PLUGIN_HOST, PLUGIN_PORT, 1, report_socket_error)
-
-	switch (report_socket_error) {
-		case 1: {
-			say("[SOCKET] Unable to create socket.")
-			prepare_socket()
-			return false
-		}
-		case 2: {
-			say("[SOCKET] Unable to connect.")
-			prepare_socket()
-			return false
-		}
-		case 3: {
-			say("[SOCKET] Unable to connect to the port.")
-			prepare_socket()
-			return false
-		}
-	}
-
-	say("[SOCKET] Successfully opened a socket.")
-	say_to_socket2("Hello^n", 7)
-
-	return PLUGIN_CONTINUE
-}
-
-public task_close_socket() {
-	close_socket()
-	return PLUGIN_CONTINUE
-}
 
 public OnAutoConfigsBuffered() {
 	new players[MAX_PLAYERS]
@@ -150,6 +76,7 @@ public OnAutoConfigsBuffered() {
 	get_players(players, players_number, "h")
 }
 
+
 public client_disconnected(id, drop, message, maxlen) {
 	new message[64]
 	format(message, charsmax(message), "DISCONNECT^t%i^t%s^t%s^n", id, player_data[id][PLAYER_STEAMID], player_data[id][PLAYER_NAME])
@@ -157,6 +84,7 @@ public client_disconnected(id, drop, message, maxlen) {
 
 	return true
 }
+
 
 public client_putinserver(id) {
 
@@ -180,29 +108,13 @@ public client_putinserver(id) {
 	return true
 }
 
+
 public say(message[]) {
 	new final_message[128]
 	format(final_message, charsmax(final_message), "[JOIN ALERT] %s", message)
 	log_message(final_message)
 }
 
-public say_to_socket(message[], message_length) {
-
-	new result
-	new final_message[128]
-
-	if (is_socket_alive()) {
-		result = socket_send(REPORT_SOCKET, message, message_length)
-
-		format(final_message, charsmax(final_message), "[SOCKET] Sending result: %i", result)
-		say(final_message)
-
-	} else {
-		say("[SOCKET] Socket is not ready. Can't send the message.")
-	}
-
-	return PLUGIN_CONTINUE
-}
 
 public say_to_socket2(message[], message_length) {
 
@@ -236,58 +148,5 @@ public say_to_socket2(message[], message_length) {
 
 	socket_close(new_socket)
 
-	return PLUGIN_CONTINUE
-}
-
-public is_socket_alive() {
-
-	if (REPORT_SOCKET > 0) {
-
-		if (socket_change(REPORT_SOCKET, 1)) {
-			// TODO: Buffer out of bound
-			REPORT_SOCKET_BUFFER_USED++
-			new buffer_idx = REPORT_SOCKET_BUFFER_USED - 1
-			socket_recv(REPORT_SOCKET, REPORT_SOCKET_BUFFER[buffer_idx], 1)
-			
-			if (strlen(REPORT_SOCKET_BUFFER[buffer_idx]) > 0) {
-				say("[SOCKET] Got some data, put it in buffer. Carrying on now.")
-				
-				return true
-
-			} else {
-				say("[SOCKET] Got nothing, probably a dead connection.")
-
-				close_socket()
-				prepare_socket()
-
-				return false
-			}
-
-		} else	{
-			return true
-		}
-
-	} else {
-		prepare_socket()
-		return false		
-	}
-}
-
-public prepare_socket() {
-	
-	if ( !task_exists(TASKID_OPENSOCKET) ) {
-		new task_param[1]
-		format(task_param, 1, "%i", TASKID_OPENSOCKET)
-		set_task(0.5, "task_open_socket", TASKID_OPENSOCKET, task_param, 1, "b")
-	
-	} else {
-		say("[SOCKET] Socket opening task already exists.")
-	}
-	
-	return PLUGIN_CONTINUE
-}
-
-public close_socket() {
-	socket_close(REPORT_SOCKET)
 	return PLUGIN_CONTINUE
 }
