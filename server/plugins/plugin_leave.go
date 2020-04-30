@@ -8,7 +8,7 @@ import (
 
 /*
 	Example:
-	ENTER	3	STEAM_0:0:76269181	C
+	LEAVE	3	STEAM_0:0:76269181	C
 */
 
 func CommandHandlerFunction(payload string) (*string, error) {
@@ -22,6 +22,6 @@ func CommandHandlerFunction(payload string) (*string, error) {
 	steam_id := payload_parts[2]
 	player_team := payload_parts[3]
 
-	fmt.Printf("ENTER: SteamID: '%s', Team: '%s' (%s)\n", steam_id, player_team, player_id)
+	fmt.Printf("LEAVE: SteamID: '%s', Team: '%s' (%s)\n", steam_id, player_team, player_id)
 	return "OK", nil
 }
