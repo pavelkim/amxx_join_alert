@@ -42,7 +42,7 @@ func handleConnection(connection net.Conn, handlers map[string]*CommandPlugin) {
 			if err == io.EOF {
 				log.Printf("Client closed %s\n", connection.RemoteAddr().String())
 			} else {
-				log.Print("Error while reading from connection:", err)
+				log.Print("Error while reading from connection: ", err)
 			}
 
 			return
@@ -54,11 +54,11 @@ func handleConnection(connection net.Conn, handlers map[string]*CommandPlugin) {
 		command := data_parts[0]
 
 		if handler, ok := handlers[command]; ok {
-			log.Print("Found handler for command", command)
+			log.Print("Found handler for command ", command)
 
 			response, err := handler.Symbol.(func(string) (string, error))(data)
 			if err != nil {
-				log.Print("Error while processing command:", err)
+				log.Print("Error while processing command: ", err)
 				break
 			}
 			connection.Write([]byte(response))
@@ -141,7 +141,7 @@ func main() {
 	listenAddress.WriteString(":")
 	listenAddress.WriteString(*portPtr)
 
-	log.Print("Listening on", listenAddress.String())
+	log.Print("Listening on ", listenAddress.String())
 
 	listening, err := net.Listen("tcp4", listenAddress.String())
 	if err != nil {
