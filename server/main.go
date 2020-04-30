@@ -61,7 +61,12 @@ func handleConnection(connection net.Conn, handlers map[string]*CommandPlugin) {
 				log.Print("Error while processing command: ", err)
 				break
 			}
+
 			connection.Write([]byte(response))
+			break
+
+		} else {
+			log.Printf("Warning: didn't find anything for command '%s'\n", command)
 			break
 		}
 	}
@@ -142,7 +147,7 @@ func main() {
 	listenAddress.WriteString(*portPtr)
 
 	log.Print("Listening on ", listenAddress.String())
-	fmt.Println("Listening on ", listenAddress.String())
+	fmt.Println("Listening on", listenAddress.String())
 
 	listening, err := net.Listen("tcp4", listenAddress.String())
 	if err != nil {
