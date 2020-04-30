@@ -125,8 +125,6 @@ public say(message[]) {
 
 public say_to_socket2(message[], message_length) {
 
-	new result
-	new final_message[128]
 	new new_socket
 	new new_socket_error
 
@@ -147,12 +145,7 @@ public say_to_socket2(message[], message_length) {
 		}
 	}
 
-	say("[SOCKET] Successfully opened a socket.")
-
-	result = socket_send(new_socket, message, message_length)
-	format(final_message, charsmax(final_message), "[SOCKET] Sending result: %i", result)
-	say(final_message)
-
+	socket_send(new_socket, message, message_length)
 	socket_close(new_socket)
 
 	return PLUGIN_CONTINUE
