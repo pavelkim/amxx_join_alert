@@ -12,7 +12,7 @@ import (
 */
 
 func CommandHandlerFunction(payload string) (string, error) {
-	payload_parts := strings.Split(payload, "\t")
+	payload_parts := strings.Split(strings.TrimRight(payload, "\n"), "\t")
 
 	if len(payload_parts) != 4 {
 		return "", fmt.Errorf("Broken payload, expected 4 pieces.")
