@@ -51,7 +51,7 @@ func handleConnection(connection net.Conn, handlers map[string]CommandPlugin) {
 		log.Printf("[%s] %s\n", connection.RemoteAddr().String(), strings.TrimRight(data, "\n"))
 
 		data_parts := strings.Split(data, "\t")
-		command := data_parts[0]
+		command := strings.TrimRight(data_parts[0], "\n")
 
 		log.Print("Handlers: ", handlers)
 
