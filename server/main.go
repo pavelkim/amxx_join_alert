@@ -33,7 +33,7 @@ type Configuration struct {
 
 func handleConnection(connection net.Conn, handlers map[string]*CommandPlugin) {
 
-	fmt.Printf("Serving %s\n", connection.RemoteAddr().String())
+	log.Printf("Serving %s\n", connection.RemoteAddr().String())
 
 	for {
 
