@@ -56,7 +56,7 @@ func handleConnection(connection net.Conn, handlers map[string]*CommandPlugin) {
 		if handler, ok := handlers[command]; ok {
 			log.Print("Found handler for command ", command)
 
-			response, err := handler.Symbol.(func(string) (string, error))(data)
+			response, err := handler.Symbol.(func(string) (*string, error))(data)
 			if err != nil {
 				log.Print("Error while processing command: ", err)
 				break
