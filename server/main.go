@@ -28,10 +28,10 @@ type CommandPlugin struct {
 
 type Configuration struct {
 	Handlers          []Handler `json:handlers`
-	SupportedCommands map[string]*CommandPlugin
+	SupportedCommands map[string]CommandPlugin
 }
 
-func handleConnection(connection net.Conn, handlers map[string]*CommandPlugin) {
+func handleConnection(connection net.Conn, handlers map[string]CommandPlugin) {
 
 	log.Printf("Serving %s\n", connection.RemoteAddr().String())
 
@@ -52,6 +52,8 @@ func handleConnection(connection net.Conn, handlers map[string]*CommandPlugin) {
 
 		data_parts := strings.Split(data, "\t")
 		command := data_parts[0]
+
+		log.Print("Handlers: ", handlers)
 
 		if handler, ok := handlers[command]; ok {
 			log.Print("Found handler for command ", command)
@@ -117,6 +119,8 @@ func main() {
 		log.Fatal("Error while reading config file:", err)
 	}
 
+	configuration.SupportedCommands = make(map[string]CommandPlugin)
+
 	for item := range configuration.Handlers {
 		command := configuration.Handlers[item].Command
 		filename := configuration.Handlers[item].Filename
@@ -133,13 +137,11 @@ func main() {
 			log.Fatal("Error while looking up a symbol:", err)
 		}
 
-		configuration.SupportedCommands = make(map[string]*CommandPlugin)
-		configuration.SupportedCommands[command] = &CommandPlugin{}
-
-		configuration.SupportedCommands[command].Command = command
-		configuration.SupportedCommands[command].Filename = filename
-		configuration.SupportedCommands[command].Symbol = symbol
-
+		configuration.SupportedCommands[command] = CommandPlugin{
+			Command:  command,
+			Filename: filename,
+			Symbol:   symbol,
+		}
 	}
 
 	listenAddress.WriteString(*addressPtr)
