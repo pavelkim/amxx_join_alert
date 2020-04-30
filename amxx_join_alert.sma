@@ -48,22 +48,28 @@ public hook_TeamInfo() {
 
 	read_data(2, TeamName, charsmax(TeamName))
 	
-	new message[64]
+	new message[92]
+
+	format(message, charsmax(message), "TEAMINFO:^t PlayerID:'%i'^t TeamName:'%s'^t PLAYER_TEAM:'%s'^t SteamID:'%s'^t ^n", PlayerID, TeamName[0], player_data[PlayerID][PLAYER_TEAM], player_data[PlayerID][PLAYER_STEAMID])
+	say(message)
+
 	format(message, charsmax(message), "TEAM^t%i^t%s^t%s^n", PlayerID, player_data[PlayerID][PLAYER_STEAMID], TeamName[0])
 	say_to_socket2(message, charsmax(message))
-
-	if (!strcmp(player_data[PlayerID][PLAYER_TEAM], "U") && strcmp(TeamName, "U")) {
-		copy(player_data[PlayerID][PLAYER_TEAM], charsmax(TeamName), TeamName)
-		
-		new message[64]
-		format(message, charsmax(message), "ENTER^t%i^t%s^t%s^n", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
-		say_to_socket2(message, charsmax(message))
 	
-	} else if (strcmp(player_data[PlayerID][PLAYER_TEAM], "U") && !strcmp(TeamName, "U")) {
-		new message[64]
-		format(message, charsmax(message), "LEAVE^t%i^t%s^t%s^n", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
-		say_to_socket2(message, charsmax(message))
-		arrayset(player_data[PlayerID], 0, player_data_struct)
+	if (strcmp(player_data[PlayerID][PLAYER_TEAM], "")) {	
+		if (!strcmp(player_data[PlayerID][PLAYER_TEAM], "U") && strcmp(TeamName, "U")) {
+			copy(player_data[PlayerID][PLAYER_TEAM], charsmax(TeamName), TeamName)
+			
+			new message[64]
+			format(message, charsmax(message), "ENTER^t%i^t%s^t%s^n", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
+			say_to_socket2(message, charsmax(message))
+		
+		} else if (strcmp(player_data[PlayerID][PLAYER_TEAM], "U") && !strcmp(TeamName, "U")) {
+			new message[64]
+			format(message, charsmax(message), "LEAVE^t%i^t%s^t%s^n", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
+			say_to_socket2(message, charsmax(message))
+			arrayset(player_data[PlayerID], 0, player_data_struct)
+		}
 	}
 	
 	return PLUGIN_CONTINUE
