@@ -53,8 +53,6 @@ func handleConnection(connection net.Conn, handlers map[string]CommandPlugin) {
 		data_parts := strings.Split(data, "\t")
 		command := strings.TrimRight(data_parts[0], "\n")
 
-		log.Print("Handlers: ", handlers)
-
 		if handler, ok := handlers[command]; ok {
 			log.Print("Found handler for command ", command)
 

@@ -63,6 +63,7 @@ public hook_TeamInfo() {
 		new message[64]
 		format(message, charsmax(message), "LEAVE^t%i^t%s^t%s^n", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM])
 		say_to_socket2(message, charsmax(message))
+		arrayset(player_data[PlayerID], 0, player_data_struct)
 	}
 	
 	return PLUGIN_CONTINUE
