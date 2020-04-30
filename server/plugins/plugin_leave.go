@@ -22,6 +22,10 @@ func CommandHandlerFunction(payload string) (*string, error) {
 	steam_id := payload_parts[2]
 	player_team := payload_parts[3]
 
+	log.Print("LEAVE: ", player_id, steam_id, player_team)
 	fmt.Printf("LEAVE: SteamID: '%s', Team: '%s' (%s)\n", steam_id, player_team, player_id)
-	return "OK", nil
+
+	response := "OK"
+
+	return &response, nil
 }
