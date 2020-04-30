@@ -11,11 +11,11 @@ import (
 	CONNECT	4	STEAM_0:0:76269181	uh9had
 */
 
-func CommandHandlerFunction(payload string) (*string, error) {
+func CommandHandlerFunction(payload string) (string, error) {
 	payload_parts := strings.Split(payload, "\t")
 
 	if len(payload_parts) != 4 {
-		return nil, fmt.Errorf("Broken payload, expected 4 pieces.")
+		return "", fmt.Errorf("Broken payload, expected 4 pieces.")
 	}
 
 	player_id := payload_parts[1]
@@ -27,5 +27,5 @@ func CommandHandlerFunction(payload string) (*string, error) {
 
 	response := "OK"
 
-	return &response, nil
+	return response, nil
 }
