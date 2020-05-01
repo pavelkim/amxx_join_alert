@@ -4,12 +4,15 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"structs"
 )
 
 /*
 	Example:
 	ENTER	3	STEAM_0:0:76269181	C
 */
+
+var PluginConfiguration structs.CommandPluginConfigurationStruct
 
 func CommandHandlerFunction(payload string) (string, error) {
 	payload_parts := strings.Split(strings.TrimRight(payload, "\n"), "\t")
@@ -24,6 +27,8 @@ func CommandHandlerFunction(payload string) (string, error) {
 
 	log.Print("ENTER: ", player_id, steam_id, player_team)
 	fmt.Printf("ENTER: SteamID: '%s', Team: '%s' (%s)\n", steam_id, player_team, player_id)
+
+	go PluginConfiguration.Messenger.(func(string) (bool, error))(fmt.Sprintf("ENTER: SteamID: '%s', Team: '%s' (%s)\n", steam_id, player_team, player_id))
 
 	response := "OK"
 

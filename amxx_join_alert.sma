@@ -7,8 +7,6 @@
 	- TTL and Queue Size for sending task queue
 	- Move configuration to CVARs
 	- Call reconnect on sending result < 0
-	- Better handle socket changing
-	- Fix how task id is being passed to task_open_socket
 	- Review log messages, check for grammar
 
 */

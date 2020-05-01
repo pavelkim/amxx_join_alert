@@ -4,12 +4,15 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"structs"
 )
 
 /*
 	Example:
 	CONNECT	4	STEAM_0:0:76269181	uh9had
 */
+
+var PluginConfiguration structs.CommandPluginConfigurationStruct
 
 func CommandHandlerFunction(payload string) (string, error) {
 	payload_parts := strings.Split(strings.TrimRight(payload, "\n"), "\t")

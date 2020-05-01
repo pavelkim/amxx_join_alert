@@ -17,5 +17,12 @@
       "filename": "plugins/plugin_leave.so"
     }
   ],
-  "other": []
+  "messenger": {
+    "platform": "telegram",
+    "filename": "plugins/plugin_telegram.so",
+    "configuration": {
+      "token": "CHANGEME",
+      "chat_id": -9000
+    }
+  }
 }
