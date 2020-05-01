@@ -74,21 +74,16 @@ Package sending process:
 Examples
 ========
 
+Package examples
+----------------
+
 Here goes a number of explained event and package contents examples.
 
-Player MrBean connected to the server
---------------------------------------
-
+1. Player MrBean connected to the server:
 `CONNECT	9	STEAM_0:2:90009000	MrBean`
-
-Player MrBean chose to play as a CT
------------------------------------
-
+1. Player MrBean chose to play as a CT:
 `ENTER	9	STEAM_0:2:90009000	C	MrBean`
-
-Player MrBean finally left the game
------------------------------------
-
+1. Player MrBean finally left the game:
 `LEAVE	9	STEAM_0:2:90009000	C	MrBean`
 
 Using netcat to receive data from the plugin
