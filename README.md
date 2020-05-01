@@ -27,6 +27,7 @@ Protocol
 ========
 
 Package scheme: `EVENT`\t`DATASET`\n
+Dataset scheme: `FIELD1`\t`FIELD2`\t`FIELD4`\t`FIELDn`\t
 
 |  Event  | Fields |     1    |    2    |      3     |      4     |
 |:-------:|:------:|:--------:|:-------:|:----------:|:----------:|
