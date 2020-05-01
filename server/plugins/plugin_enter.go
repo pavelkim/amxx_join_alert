@@ -26,11 +26,11 @@ func CommandHandlerFunction(payload string) (string, error) {
 	player_team := payload_parts[3]
 	player_name := payload_parts[4]
 
-	log.Printf("ENTER: id:%s steamid:%s team:%s name:%s", player_id, steam_id, player_team, player_name)
+	log.Printf("ENTER: name:%s steamid:%s id:%s team:%s \n", player_name, steam_id, player_id, player_team)
+	fmt.Printf("ENTER: name:%s steamid:%s id:%s team:%s \n", player_name, steam_id, player_id, player_team)
 
 	if steam_id != "BOT" {
-		message := fmt.Sprintf("ENTER: %s '%s' (%s %s)\n", steam_id, player_name, player_id, player_team)
-		fmt.Printf(message)
+		message := fmt.Sprintf("ENTER: %s '%s' (#%s %s)\n", player_name, steam_id, player_id, player_team)
 		go PluginConfiguration.Messenger.(func(string) (bool, error))(message)
 	}
 
