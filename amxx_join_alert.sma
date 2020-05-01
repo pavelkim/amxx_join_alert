@@ -48,7 +48,7 @@ public hook_TeamInfo() {
 	
 	new message[92]
 
-	format(message, charsmax(message), "TeamInfo: PlayerID:'%i' TeamName:'%s' PLAYER_TEAM:'%s' SteamID:'%s' Name:'%s'^n", PlayerID, TeamName[0], player_data[PlayerID][PLAYER_TEAM], player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_NAME])
+	format(message, charsmax(message), "TeamInfo: PlayerID:'%i' TeamName:'%s' PLAYER_TEAM:'%s' SteamID:'%s' Name:'%s'", PlayerID, TeamName[0], player_data[PlayerID][PLAYER_TEAM], player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_NAME])
 	say(message)
 
 	format(message, charsmax(message), "TEAM^t%i^t%s^t%s^n", PlayerID, player_data[PlayerID][PLAYER_STEAMID], TeamName[0])
