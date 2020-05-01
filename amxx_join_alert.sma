@@ -59,12 +59,12 @@ public hook_TeamInfo() {
 			copy(player_data[PlayerID][PLAYER_TEAM], charsmax(TeamName), TeamName)
 			
 			new message[64]
-			format(message, charsmax(message), "ENTER^t%i^t%s^t%s^t%s^n", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM], player_data[id][PLAYER_NAME])
+			format(message, charsmax(message), "ENTER^t%i^t%s^t%s^t%s^n", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM], player_data[PlayerID][PLAYER_NAME])
 			say_to_socket2(message, charsmax(message))
 		
 		} else if (strcmp(player_data[PlayerID][PLAYER_TEAM], "U") && !strcmp(TeamName, "U")) {
 			new message[64]
-			format(message, charsmax(message), "LEAVE^t%i^t%s^t%s^t%s^n", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM], player_data[id][PLAYER_NAME])
+			format(message, charsmax(message), "LEAVE^t%i^t%s^t%s^t%s^n", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM], player_data[PlayerID][PLAYER_NAME])
 			say_to_socket2(message, charsmax(message))
 			arrayset(player_data[PlayerID], 0, player_data_struct)
 		}
