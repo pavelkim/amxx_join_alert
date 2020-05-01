@@ -111,18 +111,6 @@ func ReadConfigurationFile(configPtr string, configuration *ConfigurationStruct)
 
 }
 
-func SetupLogger(logfilePtr string) {
-	logFile, err := os.OpenFile(logfilePtr, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
-	if err != nil {
-		log.Fatal("Error while initialising logger: ", err)
-	}
-
-	defer logFile.Close()
-
-	log.SetOutput(logFile)
-
-}
-
 func SetupMessenger(configuration *ConfigurationStruct) {
 
 	messengerPluginSymbol, err := plugin.Open(configuration.MessengerPlugin.Filename)
@@ -193,7 +181,15 @@ func main() {
 
 	flag.Parse()
 
-	SetupLogger(*logfilePtr)
+	logFile, err := os.OpenFile(*logfilePtr, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatal("Error while initialising logger: ", err)
+	}
+
+	defer logFile.Close()
+
+	log.SetOutput(logFile)
+
 	ReadConfigurationFile(*configPtr, &Configuration)
 	SetupMessenger(&Configuration)
 	SetupCommandPlugins(&Configuration)
