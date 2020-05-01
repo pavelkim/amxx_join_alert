@@ -52,7 +52,7 @@ public hook_TeamInfo() {
 	say(message)
 
 	format(message, charsmax(message), "TEAM^t%i^t%s^t%s^n", PlayerID, player_data[PlayerID][PLAYER_STEAMID], TeamName[0])
-	say_to_socket2(message, charsmax(message))
+	say_to_socket(message, charsmax(message))
 	
 	if (strcmp(player_data[PlayerID][PLAYER_TEAM], "")) {	
 		if (!strcmp(player_data[PlayerID][PLAYER_TEAM], "U") && strcmp(TeamName, "U")) {
@@ -60,12 +60,12 @@ public hook_TeamInfo() {
 			
 			new message[64]
 			format(message, charsmax(message), "ENTER^t%i^t%s^t%s^t%s^n", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM], player_data[PlayerID][PLAYER_NAME])
-			say_to_socket2(message, charsmax(message))
+			say_to_socket(message, charsmax(message))
 		
 		} else if (strcmp(player_data[PlayerID][PLAYER_TEAM], "U") && !strcmp(TeamName, "U")) {
 			new message[64]
 			format(message, charsmax(message), "LEAVE^t%i^t%s^t%s^t%s^n", PlayerID, player_data[PlayerID][PLAYER_STEAMID], player_data[PlayerID][PLAYER_TEAM], player_data[PlayerID][PLAYER_NAME])
-			say_to_socket2(message, charsmax(message))
+			say_to_socket(message, charsmax(message))
 			arrayset(player_data[PlayerID], 0, player_data_struct)
 		}
 	}
@@ -85,7 +85,7 @@ public OnAutoConfigsBuffered() {
 public client_disconnected(id, drop, message, maxlen) {
 	new message[64]
 	format(message, charsmax(message), "DISCONNECT^t%i^t%s^t%s^n", id, player_data[id][PLAYER_STEAMID], player_data[id][PLAYER_NAME])
-	say_to_socket2(message, charsmax(message))
+	say_to_socket(message, charsmax(message))
 
 	return true
 }
@@ -108,7 +108,7 @@ public client_putinserver(id) {
 	say(message)
 
 	format(message, charsmax(message), "CONNECT^t%i^t%s^t%s^n", id, player_data[id][PLAYER_STEAMID], player_data[id][PLAYER_NAME])
-	say_to_socket2(message, charsmax(message))
+	say_to_socket(message, charsmax(message))
 
 	return true
 }
@@ -121,7 +121,7 @@ public say(message[]) {
 }
 
 
-public say_to_socket2(message[], message_length) {
+public say_to_socket(message[], message_length) {
 
 	new new_socket
 	new new_socket_error
