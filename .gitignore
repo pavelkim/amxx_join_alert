@@ -1,0 +1,6 @@
+.*
+*.conf
+*.db
+*.bak
+*.log
+*.so
