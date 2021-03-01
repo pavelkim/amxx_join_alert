@@ -38,6 +38,27 @@ new player_data[MAX_PLAYERS + 1][player_data_struct]
 public plugin_init() {
 	register_plugin(PLUGIN, VERSION, AUTHOR)
 	register_event("TeamInfo", "hook_TeamInfo", "a")
+	register_logevent("hook_RoundStart", 2, "1=Round_Start")
+	register_logevent("hook_RoundEnd", 2, "1=Round_End")
+
+}
+
+public hook_RoundEnd() {
+
+	new message[92]
+
+	format(message, charsmax(message), "Round_Start: happened")
+	say(message)
+
+}
+
+public hook_RoundStart() {
+
+	new message[92]
+
+	format(message, charsmax(message), "Round_End: happened")
+	say(message)
+
 }
 
 public hook_TeamInfo() {
