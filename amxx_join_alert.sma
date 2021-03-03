@@ -36,10 +36,15 @@ enum _:player_data_struct {
 new player_data[MAX_PLAYERS + 1][player_data_struct]
 
 public plugin_init() {
+
 	register_plugin(PLUGIN, VERSION, AUTHOR)
 	register_event("TeamInfo", "hook_TeamInfo", "a")
+
 	register_logevent("hook_RoundStart", 2, "1=Round_Start")
 	register_logevent("hook_RoundEnd", 2, "1=Round_End")
+
+	register_logevent("hook_RoundStart", 2, "0=Round_Start")
+	register_logevent("hook_RoundEnd", 2, "0=Round_End")
 
 }
 
@@ -50,6 +55,8 @@ public hook_RoundEnd() {
 	format(message, charsmax(message), "Round_Start: happened")
 	say(message)
 
+	return PLUGIN_CONTINUE
+
 }
 
 public hook_RoundStart() {
@@ -58,6 +65,8 @@ public hook_RoundStart() {
 
 	format(message, charsmax(message), "Round_End: happened")
 	say(message)
+
+	return PLUGIN_CONTINUE
 
 }
 
