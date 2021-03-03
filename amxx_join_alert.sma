@@ -52,7 +52,7 @@ public hook_RoundEnd() {
 
 	new message[92]
 
-	format(message, charsmax(message), "Round_Start: happened")
+	format(message, charsmax(message), "Round_End: happened")
 	say(message)
 
 	return PLUGIN_CONTINUE
@@ -63,7 +63,7 @@ public hook_RoundStart() {
 
 	new message[92]
 
-	format(message, charsmax(message), "Round_End: happened")
+	format(message, charsmax(message), "Round_Start: happened")
 	say(message)
 
 	return PLUGIN_CONTINUE
