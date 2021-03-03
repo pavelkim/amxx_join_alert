@@ -43,17 +43,21 @@ public plugin_init() {
 	register_logevent("hook_RoundStart", 2, "1=Round_Start")
 	register_logevent("hook_RoundEnd", 2, "1=Round_End")
 
-	register_logevent("hook_RoundStart", 2, "0=Round_Start")
-	register_logevent("hook_RoundEnd", 2, "0=Round_End")
-
 }
 
 public hook_RoundEnd() {
 
 	new message[92]
+    new current_map[33]
+	new game_time = get_gametime()
+    
+    get_mapname(current_map,32)
 
 	format(message, charsmax(message), "Round_End: happened")
 	say(message)
+
+	format(message, charsmax(message), "ROUNDEND^t%s^t%i^n", current_map, game_time)
+	say_to_socket(message, charsmax(message))
 
 	return PLUGIN_CONTINUE
 
@@ -62,9 +66,16 @@ public hook_RoundEnd() {
 public hook_RoundStart() {
 
 	new message[92]
+    new current_map[33]
+	new game_time = get_gametime()
+    
+    get_mapname(current_map,32)
 
 	format(message, charsmax(message), "Round_Start: happened")
 	say(message)
+
+	format(message, charsmax(message), "ROUNDEND^t%s^t%i^n", current_map, game_time)
+	say_to_socket(message, charsmax(message))
 
 	return PLUGIN_CONTINUE
 
